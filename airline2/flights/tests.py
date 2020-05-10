@@ -1,6 +1,7 @@
-from django.test import TestCase
+from django.test import TestCase, Client
+from django.db.models import Max
 
-from .models import Airport, Flight
+from .models import Airport, Flight, Passenger
 
 # Create your tests here.
 class ModelsTestCase(TestCase)):
@@ -40,3 +41,9 @@ class ModelsTestCase(TestCase)):
         a2 = Airport.objects.get(code="BBB")
         f = Flight.objects.get(origin=a1, destination=a2, duration=-100)
         self.assertFalse(f.is_valid_flight())
+    
+    def test_index(self):
+        c = Client()
+        response = c.get("/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["flights"].count(), 2)
